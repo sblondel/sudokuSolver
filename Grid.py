@@ -42,17 +42,17 @@ class Grid:
                     self.boxList[self.rowList[self.boxList[i].row].boxList[j]].makeBoxGrey()
                     self.boxList[self.blocList[self.boxList[i].bloc].boxList[j]].makeBoxGrey()
 
-        print "color for", value
-        for i in range(0, 9):
-            for j in range(0, 9):
-                if (self.boxList[self.rowList[i].boxList[j]].color == "white"):
-                    print " ",
-                elif (self.boxList[self.rowList[i].boxList[j]].color == "grey"):
-                    print ".",
-                else:
-                    print "*",
-            print " "
-        
+    def makeColumnGrey(self, id):
+        for j in range(0, 9):
+            self.boxList[self.columnList[id].boxList[j]].makeBoxGrey()
+
+    def makeRowGrey(self, id):
+        for j in range(0, 9):
+            self.boxList[self.rowList[id].boxList[j]].makeBoxGrey()
+
+    def makeBlocGrey(self, id):
+        for j in range(0, 9):
+            self.boxList[self.blocList[id].boxList[j]].makeBoxGrey()
 
     def solve(self):
         conti = True
@@ -60,7 +60,7 @@ class Grid:
             conti = False
             for i in range(1, 10):
                 self.makeGridGrey(i)
-                for j in range(0, 8):
+                for j in range(0, 9):
                     column = self.columnList[j]
                     row = self.rowList[j]
                     bloc = self.blocList[j]
@@ -70,7 +70,7 @@ class Grid:
                     columnBoxID = -1
                     rowBoxID = -1
                     blocBoxID = -1
-                    for k in range(0, 8):
+                    for k in range(0, 9):
                         if (self.boxList[column.boxList[k]].color == "white"):
                             nColumnWhite = nColumnWhite + 1
                             columnBoxID = column.boxList[k]
@@ -83,12 +83,21 @@ class Grid:
 
                     if (nColumnWhite == 1):
                         self.boxList[columnBoxID].setValue(i)
+                        self.makeColumnGrey(self.boxList[columnBoxID].column)
+                        self.makeRowGrey(self.boxList[columnBoxID].row)
+                        self.makeBlocGrey(self.boxList[columnBoxID].bloc)
                         conti = True
                     if (nRowWhite == 1):
                         self.boxList[rowBoxID].setValue(i)
+                        self.makeColumnGrey(self.boxList[rowBoxID].column)
+                        self.makeRowGrey(self.boxList[rowBoxID].row)
+                        self.makeBlocGrey(self.boxList[rowBoxID].bloc)
                         conti = True
                     if (nBlocWhite == 1):
                         self.boxList[blocBoxID].setValue(i)
+                        self.makeColumnGrey(self.boxList[blocBoxID].column)
+                        self.makeRowGrey(self.boxList[blocBoxID].row)
+                        self.makeBlocGrey(self.boxList[blocBoxID].bloc)
                         conti = True
 
                 self.reSet()
@@ -118,11 +127,6 @@ class Grid:
 grid = Grid()
 grid.initializeGrid()
 grid.readGrid()
-#grid.boxList[15].setValue(1)
-#grid.boxList[20].setValue(2)
-#grid.boxList[30].setValue(5)
-#grid.boxList[48].setValue(7)
-#grid.boxList[72].setValue(8)
 grid.printGrid()
 grid.solve()
 grid.printGrid()
