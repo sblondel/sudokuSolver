@@ -35,20 +35,65 @@ class Grid:
             self.boxList[i].reSet()
 
     def makeGridGrey(self, value):
-        for i in range(0, len(self.boxList)):
+        for i in range(0, 81):
             if (self.boxList[i].value == value):
-                for j in range(0, 9):
-                    self.boxList[self.columnList[self.boxList[i].column].boxList[j]].makeBoxGrey()
-                    self.boxList[self.rowList[self.boxList[i].row].boxList[j]].makeBoxGrey()
-                    self.boxList[self.blocList[self.boxList[i].bloc].boxList[j]].makeBoxGrey()
+                self.makeColumnGrey(self.boxList[i].column)
+                self.makeRowGrey(self.boxList[i].row)
+                self.makeBlocGrey(self.boxList[i].bloc)
+        self.makeAdvancedGridGrey()
+
+    def makeAdvancedGridGrey(self):
+        for i in range(0, 9):
+            previousColumnID = -1
+            previousRowID = -1
+            columnID = -1
+            rowID = -1
+            nWhites = 0
+            sameColumn = True
+            sameRow = True
+            for j in range(0, 9):
+                if (self.boxList[self.blocList[i].boxList[j]].color == "white"):
+                    nWhites = nWhites + 1
+                    columnID = self.boxList[self.blocList[i].boxList[j]].column
+                    rowID = self.boxList[self.blocList[i].boxList[j]].row
+                    if (nWhites > 1):
+                        if (columnID != previousColumnID and sameColumn):
+                            sameColumn = False
+                        if (rowID != previousRowID and sameRow):
+                            sameRow = False
+                    previousColumnID = columnID
+                    previousRowID = rowID
+            if (nWhites > 1 and sameColumn):
+                self.makeColumnExcludeBlocGrey(columnID, i)
+            if (nWhites > 1 and sameRow):
+                self.makeRowExcludeBlocGrey(rowID, i)
+
+    def boxInBloc(self, boxID, blocID):
+        isIn = False
+        for i in range(0, 9):
+            if (boxID == self.blocList[blocID].boxList[i]):
+                isIn = True
+        return isIn
 
     def makeColumnGrey(self, id):
         for j in range(0, 9):
             self.boxList[self.columnList[id].boxList[j]].makeBoxGrey()
+                    
+    def makeColumnExcludeBlocGrey(self, columnID, blocID):
+        for j in range(0, 9):
+            boxID = self.columnList[columnID].boxList[j]
+            if (not self.boxInBloc(boxID, blocID)):
+                self.boxList[boxID].makeBoxGrey()
 
     def makeRowGrey(self, id):
         for j in range(0, 9):
             self.boxList[self.rowList[id].boxList[j]].makeBoxGrey()
+                    
+    def makeRowExcludeBlocGrey(self, rowID, blocID):
+        for j in range(0, 9):
+            boxID = self.rowList[rowID].boxList[j]
+            if (not self.boxInBloc(boxID, blocID)):
+                self.boxList[boxID].makeBoxGrey()
 
     def makeBlocGrey(self, id):
         for j in range(0, 9):
